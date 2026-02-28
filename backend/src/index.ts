@@ -1,11 +1,11 @@
 import express from 'express';
-import { greet } from './utils/test-helper';
+import { greet } from '@/utils/test-helper';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.json({
         status: 'ok',
         message: greet('Developer')
@@ -14,7 +14,7 @@ app.get('/health', (req, res) => {
 
 
 // 404 handler
-app.use((req, res) => {
+app.use((_req, res) => {
     res.status(404).json({
         success: false,
         error: {
