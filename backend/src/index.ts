@@ -1,8 +1,10 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
+import logger from '@/utils/logger';
 import { greet } from '@/utils/test-helper';
 
 const app = express();
@@ -18,6 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // health check
 app.get('/health', (_req, res) => {
+    logger.debug('Health check endpoint called');
+
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
@@ -26,9 +30,10 @@ app.get('/health', (_req, res) => {
     });
 });
 
-
 // 404 handler
 app.use((_req, res) => {
+    logger.warn(`404 - Route not found: ${_req.method} ${_req.path}`);
+
     res.status(404).json({
         success: false,
         error: {
@@ -39,8 +44,8 @@ app.use((_req, res) => {
 
 // start server
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`🚀 Server running on port ${PORT}`);
+    logger.info(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 export default app;

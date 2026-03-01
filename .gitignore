@@ -29,6 +29,9 @@ Thumbs.db
 logs/
 *.log
 
+# Backend logs
+backend/logs/*.log
+
 # Test coverage
 coverage/
 .nyc_output/
