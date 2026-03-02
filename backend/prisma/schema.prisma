@@ -26,38 +26,164 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  applications Application[]
-  companies    Company[]
+  applications  Application[]
+  companies     Company[]
+  refreshTokens RefreshToken[]
 
   @@index([email])
   @@map("users")
 }
 
-model Company {
-  id        String   @id @default(uuid())
-  name      String
-  website   String?
+model RefreshToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
 
-  user         User          @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model Company {
+  id          String    @id @default(uuid())
+  name        String
+  website     String?
+  industry    String?
+  location    String?
+  size        String?
+  description String?
+  logoUrl     String?
+  notes       String?
+  rating      Int?      @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   applications Application[]
 
   @@unique([name, userId])
+  @@index([userId])
   @@map("companies")
 }
 
+enum ApplicationStatus {
+  WISHLIST
+  APPLIED
+  PHONE_SCREEN
+  TECHNICAL_INTERVIEW
+  ONSITE_INTERVIEW
+  OFFER
+  REJECTED
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum WorkLocation {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+enum Pritority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 model Application {
-  id        String   @id @default(uuid())
-  jobTitle  String
-  userId    String
-  companyId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String            @id @default(uuid())
+  jobTitle        String
+  status          ApplicationStatus @default(WISHLIST)
+  priority        Pritority         @default(MEDIUM)
+  jobType         JobType
+  workLocation    WorkLocation?
+  salaryMin       Int?
+  salaryMax       Int?
+  salaryCurrency  String?
+  jobUrl          String?
+  jobDescription  String?
+  requirements    String?
+  benefits        String?
+  applicationData DateTime?
+  followUpDate    DateTime?
+  interviewDate   DateTime?
+  offerDate       DateTime?
+  rejectionDate   DateTime?
+  notes           String?
+  resumeUrl       String?
+  coverLetterUrl  String?
+  referralSource  String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  userId          String
+  companyId       String
 
-  user    User    @relation(fields: [userId], references: [id])
-  company Company @relation(fields: [companyId], references: [id])
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company         Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contacts        Contact[]
+  activities      Activity[]
 
+  @@index([userId])
+  @@index([companyId])
   @@map("applications")
+}
+
+model Contact {
+  id            String    @id @default(uuid())
+  name          String
+  email         String?
+  phone         String?
+  role          String?
+  linkedinUrl   String?
+  notes         String?
+  isPrimary     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  applicationId String
+
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("contacts")
+}
+
+enum ActivityType {
+  NOTE
+  EMAIL
+  CALL
+  INTERVIEW
+  FOLLOW_UP
+  MEETING
+  RESEARCH
+  OTHER
+}
+
+model Activity {
+  id            String        @id @default(uuid())
+  type          ActivityType
+  title         String
+  description   String?
+  activityDate  DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  applicationId String
+
+  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("activities")
 }
