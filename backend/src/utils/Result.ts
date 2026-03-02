@@ -5,7 +5,7 @@ export class Result<T, E = Error> {
         private readonly _error?: E
     ) {}
 
-    private static ok<T, E = Error>(value: T): Result<T, E> {
+    public static ok<T, E = Error>(value: T): Result<T, E> {
         return new Result<T, E>(true, value, undefined);
     }
 
