@@ -23,10 +23,14 @@
         "install:frontend": "cd frontend && npm install"
     },
     "devDependencies": {
-        "concurrently": "^8.2.0"
+        "concurrently": "^8.2.0",
+        "prisma": "^5.22.0"
     },
     "engines": {
         "node": ">=18.0.0",
         "npm": ">=9.0.0"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.22.0"
     }
 }
