@@ -3,18 +3,18 @@ import path from 'path';
 
 const logLevels = {
     error: 0,
-    warn: 1,
-    info: 2,
-    http: 3,
+    warn:  1,
+    info:  2,
+    http:  3,
     debug: 4
 };
 
 const logColors = {
     error: 'red',
-    warn: 'yellow',
-    info: 'green',
-    http: 'magenta',
-    debig: 'blue'
+    warn:  'yellow',
+    info:  'green',
+    http:  'magenta',
+    debug: 'blue'
 };
 
 winston.addColors(logColors);
@@ -48,13 +48,13 @@ const logger = winston.createLogger({
         new winston.transports.File({
             filename: path.join('logs', 'error.log'),
             level: 'error',
-            maxsize: 5242880, // 5MB
+            maxsize: 5242880,
             maxFiles: 5
         }),
         // combined logs
         new winston.transports.File({
             filename: path.join('logs', 'combined.log'),
-            maxsize: 5242880, // 5MB
+            maxsize: 5242880,
             maxFiles: 5
         })
     ]
