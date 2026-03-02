@@ -98,7 +98,7 @@ enum WorkLocation {
   HYBRID
 }
 
-enum Pritority {
+enum Priority {
   LOW
   MEDIUM
   HIGH
@@ -109,8 +109,8 @@ model Application {
   id              String            @id @default(uuid())
   jobTitle        String
   status          ApplicationStatus @default(WISHLIST)
-  priority        Pritority         @default(MEDIUM)
-  jobType         JobType
+  priority        Priority          @default(MEDIUM)
+  jobType         JobType?
   workLocation    WorkLocation?
   salaryMin       Int?
   salaryMax       Int?
@@ -140,6 +140,7 @@ model Application {
 
   @@index([userId])
   @@index([companyId])
+  @@index([status])
   @@map("applications")
 }
 
