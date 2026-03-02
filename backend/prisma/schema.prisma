@@ -35,13 +35,13 @@ model User {
 }
 
 model RefreshToken {
-  id        String    @id @default(uuid())
-  token     String    @unique
+  id        String   @id @default(uuid())
+  token     String   @unique
   userId    String
   expiresAt DateTime
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([token])
@@ -49,7 +49,7 @@ model RefreshToken {
 }
 
 model Company {
-  id          String    @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   website     String?
   industry    String?
@@ -58,9 +58,9 @@ model Company {
   description String?
   logoUrl     String?
   notes       String?
-  rating      Int?      @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  rating      Int?     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   userId      String
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -133,10 +133,10 @@ model Application {
   userId          String
   companyId       String
 
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company         Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  contacts        Contact[]
-  activities      Activity[]
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contacts   Contact[]
+  activities Activity[]
 
   @@index([userId])
   @@index([companyId])
@@ -145,19 +145,19 @@ model Application {
 }
 
 model Contact {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   email         String?
   phone         String?
   role          String?
   linkedinUrl   String?
   notes         String?
-  isPrimary     Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  isPrimary     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   applicationId String
 
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([applicationId])
   @@map("contacts")
@@ -175,15 +175,15 @@ enum ActivityType {
 }
 
 model Activity {
-  id            String        @id @default(uuid())
+  id            String       @id @default(uuid())
   type          ActivityType
   title         String
   description   String?
-  activityDate  DateTime      @default(now())
-  createdAt     DateTime      @default(now())
+  activityDate  DateTime     @default(now())
+  createdAt     DateTime     @default(now())
   applicationId String
 
-  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([applicationId])
   @@map("activities")
