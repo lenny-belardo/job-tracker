@@ -26,38 +26,38 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  applications    Application[]
-  companies       Company[]
+  applications Application[]
+  companies    Company[]
 
   @@index([email])
   @@map("users")
 }
 
 model Company {
-  id            String    @id @default(uuid())
-  name          String
-  website       String?
-  userId        String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  website   String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user          User      @relation(fields: [userId], references: [id])
-  applications  Application[]
+  user         User          @relation(fields: [userId], references: [id])
+  applications Application[]
 
   @@unique([name, userId])
   @@map("companies")
 }
 
 model Application {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   jobTitle  String
   userId    String
   companyId String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user      User      @relation(fields: [userId], references: [id])
-  company   Company   @relation(fields: [companyId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
 
   @@map("applications")
 }
