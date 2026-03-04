@@ -61,7 +61,7 @@ export const verifyAccessToken = (token: string): JwtPayload => {
  */
 export const verifyRefreshToken = (token: string): JwtPayload | null => {
     try {
-        return jwt.verify(token, JWT_REFRESH_SECRET) as { userId: string };
+        return jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayload;
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
             logger.info('Refresh token expired - user needs to loggin again');
