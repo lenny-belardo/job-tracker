@@ -47,7 +47,7 @@ export class BadRequestError extends AppError {
     }
 }
 
-export class Unauthorized extends AppError {
+export class UnauthorizedError extends AppError {
     constructor(message: string = 'Unauthorized', details?: ErrorDetails) {
         super(message, ErrorCode.UNAUTHORIZED, 401, true, details);
     }
