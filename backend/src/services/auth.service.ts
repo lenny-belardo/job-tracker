@@ -182,7 +182,7 @@ export class AuthService {
             }
 
             // Check if token is expired
-            if (storedToken.expiresIn < new Date()) {
+            if (storedToken.expiresAt < new Date()) {
                 // Clean up expired token
                 await prisma.refreshToken.delete({
                     where: { token: refreshToken }
