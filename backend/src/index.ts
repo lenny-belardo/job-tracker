@@ -6,17 +6,27 @@ import morgan from 'morgan';
 import compression from 'compression';
 import logger from '@/utils/logger';
 import { greet } from '@/utils/test-helper';
+import authRoutes from '@/routes/auth.routes';
+import { apiLimiter } from '@/middleware/rate-limit.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// middleware
+// Security middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+    credentials: true
+}));
+
+// General middleware
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting
+app.use('/api', apiLimiter);
 
 // health check
 app.get('/health', (_req, res) => {
@@ -30,6 +40,9 @@ app.get('/health', (_req, res) => {
     });
 });
 
+// API routes
+app.use('/api/auth', authRoutes);
+
 // 404 handler
 app.use((_req, res) => {
     logger.warn(`404 - Route not found: ${_req.method} ${_req.path}`);
@@ -37,7 +50,21 @@ app.use((_req, res) => {
     res.status(404).json({
         success: false,
         error: {
+            code: 'NOT_FOUND',
             message: 'Route not found'
+        }
+    });
+});
+
+// Global error handler
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    logger.error('Unhandled error', { error: err });
+
+    res.status(err.statusCode || 500).json({
+        success: false,
+        error: {
+            code: err.code || 'INTERNAL_ERROR',
+            message: err.message || 'Internal server error'
         }
     });
 });
