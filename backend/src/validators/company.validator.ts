@@ -16,11 +16,11 @@ export const createCompanySchema = z.object({
         .or(z.literal('')),
     industry: z
         .string()
-        .max(50, 'Industry must be at less than 50 characters')
+        .max(50, 'Industry must be less than 50 characters')
         .optional(),
     location: z
         .string()
-        .max(100, 'Location must be at less than 100 characters')
+        .max(100, 'Location must be less than 100 characters')
         .optional(),
     size: z
         .string()
