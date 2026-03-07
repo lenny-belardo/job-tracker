@@ -21,7 +21,7 @@ export interface PaginationParams {
     sortOrder?: 'asc' | 'desc'
 }
 
-export interface PagainatedResponse<T> {
+export interface PaginatedResponse<T> {
     data: T[];
     pagiantion: {
         page: number;
