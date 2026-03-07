@@ -35,7 +35,7 @@ export const createApplicationSchema = z.object({
     jobTitle: z
         .string()
         .min(1, 'Job title is required')
-        .min(200, 'Job title must be less than 200 characters')
+        .max(200, 'Job title must be less than 200 characters')
         .trim(),
     companyId: z.string().uuid('Invalid company ID'),
     status: ApplicationStatusEnum.optional().default('WISHLIST'),
@@ -61,13 +61,13 @@ export const createApplicationSchema = z.object({
  */
 export const updateApplicationSchema = createApplicationSchema
     .partial()
-    // can't chage company after creation
+    // can't change company after creation
     .omit({ companyId: true });
 
 /**
- * Query paramaters for listing applications
+ * Query parameters for listing applications
  */
-export const applcationQuerySchema = z.object({
+export const applicationQuerySchema = z.object({
     page: z.string().optional().transform((val) => (val ? parseInt(val, 10) : 1)),
     limit: z.string().optional().transform((val) => (val ? parseInt(val, 10) : 10)),
     sortBy: z.string().optional().default('createdAt'),
@@ -77,6 +77,11 @@ export const applcationQuerySchema = z.object({
     priority: PriorityEnum.optional(),
     companyId: z.string().uuid().optional()
 });
+
+// Export types
+export type CreateApplicationInput = z.infer<typeof createApplicationSchema>;
+export type UpdateApplicationInput = z.infer<typeof updateApplicationSchema>;
+export type ApplicationQueryInput = z.infer<typeof applicationQuerySchema>;
 
 // Export enums for use in other files
 export {
