@@ -107,7 +107,7 @@ export class ApplicationService {
         try {
             const { page, limit, sortBy, sortOrder, search, status, priority, companyId } = filters;
 
-            const skip = page * limit;
+            const skip = (page - 1) * limit;
 
             const where: any = { userId };
 
