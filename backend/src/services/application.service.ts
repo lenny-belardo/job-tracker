@@ -160,4 +160,147 @@ export class ApplicationService {
             return Result.fail(error as Error);
         }
     }
+
+    async findById(
+        userId: string,
+        applicationId: string
+    ): AsyncResult<Application, Error> {
+        try {
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    userId
+                },
+                include: {
+                    company: true
+                }
+            });
+
+            if (!application) {
+                return Result.fail(new NotFoundError('Application'));
+            }
+
+            return Result.ok(application);
+        } catch (error) {
+            logger.error('Error fetching application', { error, userId, applicationId });
+
+            return Result.fail(error as Error);
+        }
+    }
+
+    async update(
+        userId: string,
+        applicationId: string,
+        data: UpdateApplicationData
+    ): AsyncResult<Application, Error> {
+        try {
+            const existingApplication = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    userId
+                }
+            });
+
+            if (!existingApplication) {
+                return Result.fail(new NotFoundError('Application'));
+            }
+
+            const updateData: any = {
+                ...(data.jobTitle && { jobTitle: data.jobTitle }),
+                ...(data.status && { status: data.status }),
+                ...(data.priority && { priority: data.priority }),
+                ...(data.jobType && { jobType: data.jobType }),
+                ...(data.workLocation && { workLocation: data.workLocation }),
+                ...(data.salaryMin !== undefined && { salaryMin: data.salaryMin }),
+                ...(data.salaryMax !== undefined && { salaryMax: data.salaryMax }),
+                ...(data.salaryCurrency && { salaryCurrency: data.salaryCurrency }),
+                ...(data.jobUrl && { jobUrl: data.jobUrl }),
+                ...(data.jobDescription && { jobDescription: data.jobDescription }),
+                ...(data.requirements && { requirements: data.requirements }),
+                ...(data.benefits && { benefits: data.benefits }),
+                ...(data.applicationDate && { applicationDate: new Date(data.applicationDate) }),
+                ...(data.followUpDate && { followUpDate: new Date(data.followUpDate) }),
+                ...(data.interviewDate && { interviewDate: new Date(data.interviewDate) }),
+                ...(data.notes && { notes: data.notes }),
+                ...(data.referralSource && { referralSource: data.referralSource })
+            };
+
+            const application = await prisma.application.update({
+                where: { id: applicationId },
+                data: updateData,
+                include: {
+                    company: true
+                }
+            });
+
+            logger.info('Application updated', { applicationId, userId });
+
+            return Result.ok(application);
+        } catch (error) {
+            logger.error('Error updating application', { error, userId, applicationId });
+
+            return Result.fail(error as Error);
+        }
+    }
+
+    async delete(
+        userId: string,
+        applicationId: string
+    ): AsyncResult<void, Error> {
+        try {
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    userId
+                }
+            });
+
+            if (!application) {
+                return Result.fail(new NotFoundError('Application'));
+            }
+
+            await prisma.application.delete({
+                where: { id: applicationId }
+            });
+
+            logger.info('Application deleted', { applicationId, userId });
+
+            return Result.ok(undefined);
+        } catch (error) {
+            logger.error('Error deleting application',  { error, userId, applicationId });
+
+            return Result.fail(error as Error);
+        }
+    }
+
+    /**
+     * Get statistics for user's applications
+     */
+    async getStats(userId: string): AsyncResult<any, Error> {
+        try {
+            const [total, byStatus, byPriority] = await Promise.all([
+                prisma.application.count({ where: { userId }}),
+                prisma.application.groupBy({
+                    by: ['status'],
+                    where: { userId },
+                    _count: true
+                }),
+                prisma.application.groupBy({
+                    by: ['priority'],
+                    where: { userId },
+                    _count: true
+                })
+            ]);
+
+            return Result.ok({
+                total,
+                byStatus,
+                byPriority
+            });
+        } catch (error) {
+            logger.error('Error fetching application stats', { error, userId });
+
+            return Result.fail(error as Error);
+        }
+    }
 }
