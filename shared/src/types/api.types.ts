@@ -23,7 +23,7 @@ export interface PaginationParams {
 
 export interface PaginatedResponse<T> {
     data: T[];
-    pagiantion: {
+    pagination: {
         page: number;
         limit: number;
         total: number;

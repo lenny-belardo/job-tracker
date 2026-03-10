@@ -1,6 +1,6 @@
 import { Company } from '@prisma/client';
 import { AsyncResult, Result } from '@/utils/Result';
-import { NotFoundError, ForbiddenError, ConflictError } from '@/utils/errors/AppError';
+import { NotFoundError, ConflictError } from '@/utils/errors/AppError';
 import prisma from '@/config/database';
 import logger from '@/utils/logger';
 import type { PaginatedResponse } from '@job-tracker/shared';
@@ -176,7 +176,7 @@ export class CompanyService {
             }
 
             // if updating name, check for conflicts
-            if (data.name && data.name ! == existingCompany.name) {
+            if (data.name && data.name !== existingCompany.name) {
                 const nameConflict = await prisma.company.findFirst({
                     where: {
                         name: data.name,
@@ -190,16 +190,16 @@ export class CompanyService {
                         new ConflictError('Company with this name already exists')
                     );
                 }
-
-                const company = await prisma.company.update({
-                    where: { id: companyId },
-                    data
-                });
-
-                logger.info('Company updated', { companyId, userId });
-
-                return Result.ok(company);
             }
+
+            const company = await prisma.company.update({
+                where: { id: companyId },
+                data
+            });
+
+            logger.info('Company updated', { companyId, userId });
+
+            return Result.ok(company);
         } catch (error) {
             logger.error('Error updating company', { error, userId, companyId });
 
@@ -235,7 +235,7 @@ export class CompanyService {
 
             return Result.ok(undefined);
         } catch (error) {
-            logger.error('Error deleting comapny', { error, userId, companyId });
+            logger.error('Error deleting company', { error, userId, companyId });
 
             return Result.fail(error as Error);
         }
