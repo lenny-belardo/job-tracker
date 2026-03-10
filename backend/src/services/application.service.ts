@@ -62,8 +62,25 @@ export class ApplicationService {
 
             const application = await prisma.application.create({
                 data: {
-                    ...data,
-                    userId
+                    jobTitle: data.jobTitle,
+                    companyId: data.companyId,
+                    userId,
+                    ...(data.status && { status: data.status as any }),
+                    ...(data.priority && { priority: data.priority as any }),
+                    ...(data.jobType && { jobType: data.jobType as any }),
+                    ...(data.workLocation && { workLocation: data.workLocation as any }),
+                    ...(data.salaryMin !== undefined && { salaryMin: data.salaryMin }),
+                    ...(data.salaryMax !== undefined && { salaryMax: data.salaryMax }),
+                    ...(data.salaryCurrency && { salaryCurrency: data.salaryCurrency }),
+                    ...(data.jobUrl && { jobUrl: data.jobUrl }),
+                    ...(data.jobDescription && { jobDescription: data.jobDescription }),
+                    ...(data.requirements && { requirements: data.requirements }),
+                    ...(data.benefits && { benefits: data.benefits }),
+                    ...(data.applicationDate && { applicationDate: new Date(data.applicationDate) }),
+                    ...(data.followUpDate && { followUpDate: new Date(data.followUpDate) }),
+                    ...(data.interviewDate && { interviewDate: new Date(data.interviewDate) }),
+                    ...(data.notes && { notes: data.notes }),
+                    ...(data.referralSource && { referralSource: data.referralSource })
                 },
                 include: {
                     company: true
