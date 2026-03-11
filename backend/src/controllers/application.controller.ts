@@ -235,4 +235,41 @@ export class ApplicationController {
             });
         }
     }
+
+    async getStats(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.user!.id;
+
+            const result = await applicationService.getStats(userId);
+
+            if (result.isFailure()) {
+                const error = result.getError();
+
+                res.status(500).json({
+                    success: false,
+                    error: {
+                        code: 'INTERNAL_ERROR',
+                        message: error.message
+                    }
+                });
+
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                data: result.getValue()
+            });
+        } catch (error) {
+            logger.error('Error in application getStats', { error });
+
+            res.status(500).json({
+                success: false,
+                error: {
+                    code: 'INTERNAL_ERROR',
+                    message: 'Failed to fetch statistics'
+                }
+            });
+        }
+    }
 }
