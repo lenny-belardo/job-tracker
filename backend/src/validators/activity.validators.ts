@@ -27,7 +27,7 @@ export const createActivitySchema = z.object({
         .trim(),
     description: z
         .string()
-        .max(5000, 'Description must be less than 500 characters')
+        .max(5000, 'Description must be less than 5000 characters')
         .optional(),
     activityDate: z.string().datetime().optional()
 });
