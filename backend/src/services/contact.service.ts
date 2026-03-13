@@ -129,4 +129,56 @@ export class ContactService {
             return Result.fail(error as Error);
         }
     }
+
+    /**
+     * Update a contact
+     */
+    async update(
+        userId: string,
+        contactId: string,
+        data: UpdateContactData
+    ): AsyncResult<Contact, Error> {
+        try {
+            // verify contact belongs to user's application
+            const existingContact = await prisma.contact.findFirst({
+                where: {
+                    id: contactId,
+                    application: {
+                        userId
+                    }
+                }
+            });
+
+            if (!existingContact) {
+                return Result.fail(new NotFoundError('Contact'));
+            }
+
+            // if setting this contact as primary, unset other primary contacts
+            if (data.isPrimary) {
+                await prisma.contact.updateMany({
+                    where: {
+                        applicationId: existingContact.applicationId,
+                        isPrimary: true,
+                        id: { not: contactId }
+                    },
+                    data: {
+                        isPrimary: false
+                    }
+                });
+            }
+
+            const contact = await prisma.contact.update({
+                where: { id: contactId },
+                data: data as any
+            });
+
+            logger.info('Contact updated', { contact, userId });
+
+            return Result.ok(contact);
+        } catch (error) {
+            logger.error('Error updating contact', { error, userId, contactId });
+
+            return Result.fail(error as Error);
+        }
+    }
 }
