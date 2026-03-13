@@ -172,11 +172,46 @@ export class ContactService {
                 data: data as any
             });
 
-            logger.info('Contact updated', { contact, userId });
+            logger.info('Contact updated', { contactId, userId });
 
             return Result.ok(contact);
         } catch (error) {
             logger.error('Error updating contact', { error, userId, contactId });
+
+            return Result.fail(error as Error);
+        }
+    }
+
+    /**
+     * Delete a contact
+     */
+    async delete(
+        userId: string,
+        contactId: string
+    ): AsyncResult<void, Error> {
+        try {
+            const contact = await prisma.contact.findFirst({
+                where: {
+                    id: contactId,
+                    application: {
+                        userId
+                    }
+                }
+            });
+
+            if (!contact) {
+                return Result.fail(new NotFoundError('Contact'));
+            }
+
+            await prisma.contact.delete({
+                where: { id: contactId }
+            });
+
+            logger.info('Contact deleted', { contactId, userId });
+
+            return Result.ok(undefined);
+        } catch (error) {
+            logger.error('Error deleting contact', { error, userId, contactId });
 
             return Result.fail(error as Error);
         }
