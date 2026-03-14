@@ -170,6 +170,9 @@ export class ActivityService {
         }
     }
 
+    /**
+     * Delete an activity
+     */
     async delete(
         userId: string,
         activityId: string
@@ -197,6 +200,45 @@ export class ActivityService {
             return Result.ok(undefined);
         } catch (error) {
             logger.error('Error deleting activity', { error, userId, activityId });
+
+            return Result.fail(error as Error);
+        }
+    }
+
+    /**
+     * Get recent activities for user (timeline)
+     */
+    async getRecentActivities(
+        userId: string,
+        limit: number = 20
+    ): AsyncResult<Activity[], Error> {
+        try {
+            const activities = await prisma.activity.findMany({
+                where: {
+                    application: {
+                        userId
+                    }
+                },
+                include: {
+                    application: {
+                        select: {
+                            id: true,
+                            jobTitle: true,
+                            company: {
+                                select: {
+                                    name: true
+                                }
+                            }
+                        }
+                    }
+                },
+                orderBy: { activityDate: 'desc' },
+                take: limit
+            });
+
+            return Result.ok(activities as any);
+        } catch (error) {
+            logger.error('Error fetching recent activities',  { error, userId });
 
             return Result.fail(error as Error);
         }
