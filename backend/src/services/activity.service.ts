@@ -12,9 +12,9 @@ export interface CreateActivityData {
     activityDate?: string;
 }
 
-export interface UpdateActivityData extends Partial<Omit<CreateActivityData, 'aplicationId'>> {}
+export interface UpdateActivityData extends Partial<Omit<CreateActivityData, 'applicationId'>> {}
 
-export class AcivityService {
+export class ActivityService {
     /**
      * Create a new activity
      */
@@ -38,7 +38,7 @@ export class AcivityService {
             const activityData: any = {
                 type: data.type,
                 title: data.title,
-                description: data.descritption,
+                description: data.description,
                 applicationId: data.applicationId
             }
 
