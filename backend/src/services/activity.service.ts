@@ -92,4 +92,33 @@ export class ActivityService {
             return Result.fail(error as Error);
         }
     }
+
+    /**
+     * Get a single activity by ID
+     */
+    async findById(
+        userId: string,
+        activityId: string
+    ): AsyncResult<Activity, Error> {
+        try {
+            const activity = await prisma.activity.findFirst({
+                where: {
+                    id: activityId,
+                    application: {
+                        userId
+                    }
+                }
+            });
+
+            if (!activity) {
+                return Result.fail(new NotFoundError('Activity'));
+            }
+
+            return Result.ok(activity);
+        } catch (error) {
+            logger.error('Error fetching activity', { error, userId, activityId });
+
+            return Result.fail(error as Error);
+        }
+    }
 }
