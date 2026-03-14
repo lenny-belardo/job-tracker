@@ -169,4 +169,36 @@ export class ActivityService {
             return Result.fail(error as Error);
         }
     }
+
+    async delete(
+        userId: string,
+        activityId: string
+    ): AsyncResult<void, Error> {
+        try {
+            const activity = await prisma.activity.findFirst({
+                where: {
+                    id: activityId,
+                    application: {
+                        userId
+                    }
+                }
+            });
+
+            if (!activity) {
+                return Result.fail(new NotFoundError('Activity'));
+            }
+
+            await prisma.activity.delete({
+                where: { id: activityId }
+            });
+
+            logger.info('Activity deleted', { activityId, userId });
+
+            return Result.ok(undefined);
+        } catch (error) {
+            logger.error('Error deleting activity', { error, userId, activityId });
+
+            return Result.fail(error as Error);
+        }
+    }
 }
