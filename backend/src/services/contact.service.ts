@@ -1,6 +1,6 @@
 import { Contact } from '@prisma/client';
 import { AsyncResult, Result } from '@/utils/Result';
-import { NotFoundError, ForbiddenError } from '@/utils/errors/AppError';
+import { NotFoundError } from '@/utils/errors/AppError';
 import prisma from '@/config/database';
 import logger from '@/utils/logger';
 
