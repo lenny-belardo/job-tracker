@@ -309,31 +309,79 @@ export class ApplicationService {
      */
     async getDashboardAnalytics(userId: string): AsyncResult<any, Error> {
         try {
-            const applications = await prisma.application.findMany({
-                where: { userId }
-            });
+            const [
+                applications,
+                statusBreakdown,
+                priorityBreakdown,
+                recentApplications
+            ] = await Promise.all([
+                // get all applications with counts
+                prisma.application.findMany({
+                    where: { userId },
+                    include: {
+                        company: {
+                            select: {
+                                name: true
+                            }
+                        },
+                        _count: {
+                            select: {
+                                contacts: true,
+                                activities: true
+                            }
+                        }
+                    },
+                    orderBy: { createdAt: 'desc' }
+                }),
 
-            const applicationsWithDetails = await Promise.all(
-                applications.map(async (app) => {
-                    const contactCount = await prisma.contact.count({
-                        where: { applicationId: app.id }
-                    });
+                // status breakdown
+                prisma.application.groupBy({
+                    by: ['status'],
+                    where: { userId },
+                    _count: true
+                }),
 
-                    const activityCount = await prisma.activity.count({
-                        where: { applicationId: app.id }
-                    });
+                // priority breakdown
+                prisma.application.groupBy({
+                    by: ['priority'],
+                    where: { userId },
+                    _count: true
+                }),
 
-                    return {
-                        ...app,
-                        contactCount,
-                        activityCount
-                    };
+                // recent applications (last 7 days)
+                prisma.application.count({
+                    where: {
+                        userId,
+                        createdAt: {
+                            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                        }
+                    }
                 })
-            );
+            ]);
+
+            // calculate success rate
+            const totalApps = applications.length;
+            const acceptedApps = applications.filter((app) => app.status === 'ACCEPTED').length;
+            const successRate = totalApps > 0 ? ((acceptedApps / totalApps) * 100).toFixed(1): '0.0';
 
             return Result.ok({
-                totalApplications: applications.length,
-                applications: applicationsWithDetails
+                summary: {
+                    total: totalApps,
+                    recentWeek: recentApplications,
+                    successRate: `${successRate}%`
+                },
+                byStatus: statusBreakdown,
+                byPriority: priorityBreakdown,
+                applications: applications.map((app) => ({
+                    id: app.id,
+                    jobTitle: app.jobTitle,
+                    company: app.company.name,
+                    status: app.status,
+                    priority: app.priority,
+                    contactCount: app._count.contacts,
+                    activityCount: app._count.activities,
+                    createdAt: app.createdAt
+                }))
             });
         } catch (error) {
             logger.error('Error fetching dashboard analytics', { error, userId });
