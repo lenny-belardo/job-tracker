@@ -121,4 +121,52 @@ export class ActivityService {
             return Result.fail(error as Error);
         }
     }
+
+    /**
+     * Update an activity
+     */
+    async update(
+        userId: string,
+        activityId: string,
+        data: UpdateActivityData
+    ): AsyncResult<Activity, Error> {
+        try {
+            // verify activity belongs to user's application
+            const existingActivity = await prisma.activity.findFirst({
+                where: {
+                    id: activityId,
+                    application: {
+                        userId
+                    }
+                }
+            });
+
+            if (!existingActivity) {
+                return Result.fail(new NotFoundError('Activity'));
+            }
+
+            const updateData: any = {
+                ...(data.type && { type: data.type }),
+                ...(data.title && { title: data.title }),
+                ...(data.description !== undefined && { description: data.description })
+            };
+
+            if (data.activityDate) {
+                updateData.activityDate = new Date(data.activityDate);
+            }
+
+            const activity = await prisma.activity.update({
+                where: { id: activityId },
+                data: updateData
+            });
+
+            logger.info('Activity updated', { activityId, userId });
+
+            return Result.ok(activity);
+        } catch (error) {
+            logger.error('Error updating activity', { error, userId, activityId });
+
+            return Result.fail(error as Error);
+        }
+    }
 }
