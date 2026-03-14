@@ -59,4 +59,37 @@ export class ActivityService {
             return Result.fail(error as Error);
         }
     }
+
+    /**
+     * Get all activities for an application
+     */
+    async findByApplication(
+        userId: string,
+        applicationId: string
+    ): AsyncResult<Activity[], Error> {
+        try {
+            // verify application belongs to user
+            const application = await prisma.application.findFirst({
+                where: {
+                    id: applicationId,
+                    userId
+                }
+            });
+
+            if (!application) {
+                return Result.fail(new NotFoundError('Application'));
+            }
+
+            const activities = await prisma.activity.findMany({
+                where: { applicationId },
+                orderBy: { activityDate: 'desc' }
+            });
+
+            return Result.ok(activities);
+        } catch (error) {
+            logger.error('Error fetching activities', { error, userId, applicationId });
+
+            return Result.fail(error as Error);
+        }
+    }
 }
