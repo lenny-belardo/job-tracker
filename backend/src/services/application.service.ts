@@ -303,4 +303,42 @@ export class ApplicationService {
             return Result.fail(error as Error);
         }
     }
+
+    /**
+     * Get dashboard analytics
+     */
+    async getDashboardAnalytics(userId: string): AsyncResult<any, Error> {
+        try {
+            const applications = await prisma.application.findMany({
+                where: { userId }
+            });
+
+            const applicationsWithDetails = await Promise.all(
+                applications.map(async (app) => {
+                    const contactCount = await prisma.contact.count({
+                        where: { applicationId: app.id }
+                    });
+
+                    const activityCount = await prisma.activity.count({
+                        where: { applicationId: app.id }
+                    });
+
+                    return {
+                        ...app,
+                        contactCount,
+                        activityCount
+                    };
+                })
+            );
+
+            return Result.ok({
+                totalApplications: applications.length,
+                applications: applicationsWithDetails
+            });
+        } catch (error) {
+            logger.error('Error fetching dashboard analytics', { error, userId });
+
+            return Result.fail(error as Error);
+        }
+    }
 }
