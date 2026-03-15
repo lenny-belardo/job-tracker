@@ -233,7 +233,7 @@ export class ActivityController {
         }
     }
 
-    async getRecentActivites(req: Request, res: Response): Promise<void> {
+    async getRecentActivities(req: Request, res: Response): Promise<void> {
         try {
             const userId = req.user!.id;
             const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
