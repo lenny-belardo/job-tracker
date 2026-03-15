@@ -192,4 +192,45 @@ export class ActivityController {
             });
         }
     }
+
+    async delete(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.user!.id;
+            const { id } = req.params;
+
+            const result = await activityService.delete(userId, id);
+
+            if (result.isFailure()) {
+                const error = result.getError();
+                const appError = error as any;
+
+                res.status(appError.statusCode || 404).json({
+                    success: false,
+                    error: {
+                        code: appError.code,
+                        message: error.message
+                    }
+                });
+
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                data: {
+                    message: 'Activity deleted successfully'
+                }
+            });
+        } catch (error) {
+            logger.error('Error in activity delete', { error });
+
+            res.status(500).json({
+                success: false,
+                error: {
+                    code: 'INTERNAL_ERROR',
+                    message: 'Failed to delete activity'
+                }
+            });
+        }
+    }
 }
