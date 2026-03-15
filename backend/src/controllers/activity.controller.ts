@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { ActivityService } from '@/services/activity.service';
 import {
     createActivitySchema,
-    updateActivitySchema,
-    // updateActivitySchema
+    updateActivitySchema
 } from '@/validators/activity.validator';
 import logger from '@/utils/logger';
 
@@ -229,6 +228,44 @@ export class ActivityController {
                 error: {
                     code: 'INTERNAL_ERROR',
                     message: 'Failed to delete activity'
+                }
+            });
+        }
+    }
+
+    async getRecentActivites(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.user!.id;
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+
+            const result = await activityService.getRecentActivities(userId, limit);
+
+            if (result.isFailure()) {
+                const error = result.getError();
+
+                res.status(500).json({
+                    success: false,
+                    error: {
+                        code: 'INTERNAL_ERROR',
+                        message: error.message
+                    }
+                });
+
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                data: result.getValue()
+            });
+        } catch (error) {
+            logger.error('Error fetching recent activities', { error });
+
+            res.status(500).json({
+                success: false,
+                error: {
+                    code: 'INTERNAL_ERROR',
+                    message: 'Failed to fetch recent activities'
                 }
             });
         }
