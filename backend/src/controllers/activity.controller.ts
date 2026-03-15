@@ -60,4 +60,43 @@ export class ActivityController {
             });
         }
     }
+
+    async findByApplication(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.user!.id;
+            const { applicationId } = req.params;
+
+            const result = await activityService.findByApplication(userId, applicationId);
+
+            if (result.isFailure()) {
+                const error = result.getError();
+                const appError = error as any;
+
+                res.status(appError.statusCode || 404).json({
+                    success: false,
+                    error: {
+                        code: appError.code,
+                        message: error.message
+                    }
+                });
+
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                data: result.getValue()
+            });
+        } catch (error) {
+            logger.error('Error fetching activities', { error });
+
+            res.status(500).json({
+                success: false,
+                error: {
+                    code: 'INTERNAL_ERROR',
+                    message: 'Failed to fetch activities'
+                }
+            });
+        }
+    }
 }
