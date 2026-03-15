@@ -177,6 +177,8 @@ export class ActivityController {
                         details: error.errors
                     }
                 });
+
+                return;
             }
 
             logger.error('Error in activity update', { error });
@@ -185,7 +187,7 @@ export class ActivityController {
                 success: false,
                 error: {
                     code: 'INTERNAL_ERROR',
-                    message: 'Failed to udpate activity'
+                    message: 'Failed to update activity'
                 }
             });
         }
