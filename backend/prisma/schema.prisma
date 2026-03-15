@@ -119,7 +119,7 @@ model Application {
   jobDescription  String?
   requirements    String?
   benefits        String?
-  applicationData DateTime?
+  applicationDate DateTime?
   followUpDate    DateTime?
   interviewDate   DateTime?
   offerDate       DateTime?

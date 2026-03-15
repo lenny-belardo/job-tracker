@@ -362,7 +362,7 @@ export class ApplicationService {
             // calculate success rate
             const totalApps = applications.length;
             const acceptedApps = applications.filter((app) => app.status === 'ACCEPTED').length;
-            const successRate = totalApps > 0 ? ((acceptedApps / totalApps) * 100).toFixed(1): '0.0';
+            const successRate = totalApps > 0 ? ((acceptedApps / totalApps) * 100).toFixed(1) : '0.0';
 
             return Result.ok({
                 summary: {
