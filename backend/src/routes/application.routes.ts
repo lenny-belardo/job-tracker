@@ -11,6 +11,7 @@ router.use(authenticate);
 router.post('/', (req, res) => applicationController.create(req, res));
 router.get('/', (req, res) => applicationController.findAll(req, res));
 router.get('/stats', (req, res) => applicationController.getStats(req, res));
+router.get('/analytics/dashboard', (req, res) => applicationController.getDashboardAnalytics(req, res));
 router.get('/:id', (req, res) => applicationController.findById(req, res));
 router.put('/:id', (req, res) => applicationController.update(req, res));
 router.delete('/:id', (req, res) => applicationController.delete(req, res));
