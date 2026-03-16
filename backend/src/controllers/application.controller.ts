@@ -272,4 +272,41 @@ export class ApplicationController {
             });
         }
     }
+
+    async getDashboardAnalytics(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.user!.id;
+
+            const result = await applicationService.getDashboardAnalytics(userId);
+
+            if (result.isFailure()) {
+                const error = result.getError();
+
+                res.status(500).json({
+                    success: false,
+                    error: {
+                        code: 'INERNAL_ERROR',
+                        message: error.message
+                    }
+                });
+
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                data: result.getValue()
+            });
+        } catch (error) {
+            logger.error('Error fetching dashboard analytics', { error });
+
+            res.status(500).json({
+                success: false,
+                error: {
+                    code: 'INTERNAL_ERROR',
+                    message: 'Failed to fetch analytics'
+                }
+            });
+        }
+    }
 }
