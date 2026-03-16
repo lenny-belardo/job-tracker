@@ -7,8 +7,10 @@ import compression from 'compression';
 import logger from '@/utils/logger';
 import { greet } from '@/utils/test-helper';
 import authRoutes from '@/routes/auth.routes';
+import activityRoutes from '@/routes/activity.routes';
 import applicationRoutes from '@/routes/application.routes';
 import companyRoutes from '@/routes/company.routes';
+import contactRoutes from '@/routes/contact.routes';
 import { apiLimiter } from '@/middleware/rate-limit.middleware';
 
 const app = express();
@@ -46,6 +48,8 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/contacts', contactRoutes);
+app.use('/api/activities', activityRoutes);
 
 // 404 handler
 app.use((_req, res) => {
