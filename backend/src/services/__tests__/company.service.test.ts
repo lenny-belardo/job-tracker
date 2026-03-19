@@ -136,4 +136,25 @@ describe('CompanyService', () => {
             );
         });
     });
+
+    describe('findById', () => {
+        it('should return company by id', async () => {
+            const mockCompany = createMockCompany(mockUser.id);
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(mockCompany);
+
+            const result = await companyService.findById(mockUser.id, mockCompany.id);
+
+            expect(result.isSuccess()).toBe(true);
+            expect(result.getValue()).toBe(mockCompany);
+        });
+
+        it('should fail if company not found', async () => {
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(null);
+
+            const result = await companyService.findById(mockUser.id, 'non-existent');
+
+            expect(result.isFailure()).toBe(true);
+            expect(result.getError().message).toContain('not found');
+        });
+    });
 });
