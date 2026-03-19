@@ -10,8 +10,8 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
   testPathIgnorePatterns: [
     '/node_modules/',
-    '/__test__/setup.ts/',
-    '/__test__/helpers/'
+    '/__tests__/setup.ts/',
+    '/__tests__/helpers/'
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
