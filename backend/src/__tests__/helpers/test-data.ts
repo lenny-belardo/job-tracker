@@ -6,6 +6,10 @@ export const createMockUser = (overrides: Partial<User> = {}): User => ({
     password: '$2b$10$hashedpassword',
     firstName: 'Test',
     lastName: 'User',
+    avatar: null,
+    isEmailVerified: false,
+    isActive: true,
+    lastLoginAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides
