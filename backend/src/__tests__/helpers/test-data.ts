@@ -15,7 +15,7 @@ export const createMockUser = (overrides: Partial<User> = {}): User => ({
     ...overrides
 });
 
-export const createMockCompany = (userId: string, overrides: {}) => ({
+export const createMockCompany = (userId: string, overrides = {}) => ({
     id: 'company-123',
     name: 'Test Company',
     industry: 'Technology',
@@ -32,7 +32,7 @@ export const createMockCompany = (userId: string, overrides: {}) => ({
     ...overrides
 });
 
-export const createMockApplication = (userId: string, companyId: string, overrides: {}) => ({
+export const createMockApplication = (userId: string, companyId: string, overrides = {}) => ({
     id: 'app-123',
     jobTitle: 'Software Engineer',
     companyId,
