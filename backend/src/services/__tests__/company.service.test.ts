@@ -157,4 +157,32 @@ describe('CompanyService', () => {
             expect(result.getError().message).toContain('not found');
         });
     });
+
+    describe('update', () => {
+        it('should update company successfully', async () => {
+            const mockCompany = createMockCompany(mockUser.id);
+            const updateData = { rating: 5, notes: 'Great company' };
+
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(mockCompany);
+            (prisma.company.update as jest.Mock).mockResolvedValue({
+                ...mockCompany,
+                ...updateData
+            });
+
+            const result = await companyService.update(mockUser.id, mockCompany.id, updateData);
+
+            expect(result.isSuccess()).toBe(true);
+            expect(result.getValue().rating).toBe(5);
+            expect(result.getValue().notes).toBe('Great company');
+        });
+
+        it('should fail if company not found', async () => {
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(null);
+
+            const result = await companyService.update(mockUser.id, 'non-existent', { rating: 5 });
+
+            expect(result.isFailure()).toBe(true);
+            expect(prisma.company.update).not.toHaveBeenCalled();
+        });
+    });
 });
