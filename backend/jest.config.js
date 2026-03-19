@@ -7,7 +7,12 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/__test__/setup.ts/',
+    '/__test__/helpers/'
+  ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
@@ -16,7 +21,8 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
-    '!src/index.ts'
+    '!src/index.ts',
+    '!src/__tests__/**'
   ],
   coverageThreshold: {
     global: {
