@@ -82,4 +82,58 @@ describe('CompanyService', () => {
             expect(result.getError().message).toBe('Database error');
         });
     });
+
+    describe('findAll', () => {
+        it('should return paginated companies', async () => {
+            const mockCompanies = [
+                createMockCompany(mockUser.id, { name: 'Company 1' }),
+                createMockCompany(mockUser.id, { name: 'Company 2' })
+            ];
+
+            (prisma.company.findMany as jest.Mock).mockResolvedValue(mockCompanies);
+            (prisma.company.count as jest.Mock).mockResolvedValue(2);
+
+            const result = await companyService.findAll(mockUser.id, {
+                page: 1,
+                limit: 10,
+                sortBy: 'name',
+                sortOrder: 'asc'
+            });
+
+            expect(result.isSuccess()).toBe(true);
+
+            const value = result.getValue();
+
+            expect(value.data).toEqual(mockCompanies);
+            expect(value.pagination.total).toBe(2);
+            expect(value.pagination.page).toBe(1);
+            expect(value.pagination.hasNext).toBe(false);
+        });
+
+        it('should filter by search term', async () => {
+            const mockCompanies = [createMockCompany(mockUser.id, { name: 'Google' })];
+
+            (prisma.company.findMany as jest.Mock).mockResolvedValue(mockCompanies);
+            (prisma.company.count as jest.Mock).mockResolvedValue(1);
+
+            const result = await companyService.findAll(mockUser.id, {
+                page: 1,
+                limit: 10,
+                search: 'google',
+                sortBy: 'name',
+                sortOrder: 'asc'
+            });
+
+            expect(result.isSuccess()).toBe(true);
+            expect(prisma.company.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        OR: expect.arrayContaining([
+                            expect.objectContaining({ name: { contains: 'google', mode: 'insensitive' }})
+                        ])
+                    })
+                })
+            );
+        });
+    });
 });
