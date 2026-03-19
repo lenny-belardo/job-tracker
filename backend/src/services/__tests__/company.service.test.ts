@@ -185,4 +185,28 @@ describe('CompanyService', () => {
             expect(prisma.company.update).not.toHaveBeenCalled();
         });
     });
+
+    describe('delete', () => {
+        it('should delete company successfully', async () => {
+            const mockCompany = createMockCompany(mockUser.id);
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(mockCompany);
+            (prisma.company.delete as jest.Mock).mockResolvedValue(mockCompany);
+
+            const result = await companyService.delete(mockUser.id, mockCompany.id);
+
+            expect(result.isSuccess()).toBe(true);
+            expect(prisma.company.delete).toHaveBeenCalledWith({
+                where: { id: mockCompany.id }
+            });
+        });
+
+        it('should fail if company not found', async () => {
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(null);
+
+            const result = await companyService.delete(mockUser.id, 'non-existent');
+
+            expect(result.isFailure()).toBe(true);
+            expect(prisma.company.delete).not.toHaveBeenCalled();
+        });
+    });
 });
