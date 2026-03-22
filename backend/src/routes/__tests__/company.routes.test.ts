@@ -138,4 +138,25 @@ describe('Company Routes', () => {
             expect(response.status).toBe(404);
         });
     });
+
+    describe('PUT /api/companies/:id', () => {
+        it('should update company successfully', async () => {
+            const mockCompany = createMockCompany(mockUser.id);
+            const updatedData = { rating: 5, notes: 'Great company' };
+
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(mockCompany);
+            (prisma.company.update as jest.Mock).mockResolvedValue({
+                ...mockCompany,
+                ...updatedData
+            });
+
+            const response = await request(app)
+                .put(`/api/companies/${mockCompany.id}`)
+                .set('Authorization', `Bearer ${authToken}`)
+                .send(updatedData);
+            
+            expect(response.status).toBe(200);
+            expect(response.body.data.rating).toBe(5);
+        });
+    });
 });
