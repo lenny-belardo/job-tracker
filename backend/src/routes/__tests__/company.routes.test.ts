@@ -113,4 +113,29 @@ describe('Company Routes', () => {
             expect(response.body.data[0].name).toBe('Google');
         });
     });
+
+    describe('GET /api/companies/:id', () => {
+        it('should return company by id', async () => {
+            const mockCompany = createMockCompany(mockUser.id);
+
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(mockCompany);
+
+            const response = await request(app)
+                .get(`/api/companies/${mockCompany.id}`)
+                .set('Authorization', `Bearer ${authToken}`);
+            
+            expect(response.status).toBe(200);
+            expect(response.body.data.id).toBe(mockCompany.id);
+        });
+
+        it('should return 404 for non-existent company', async () => {
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(null);
+
+            const response = await request(app)
+                .get('/api/companies/non-existent')
+                .set('Authorization', `Bearer ${authToken}`);
+
+            expect(response.status).toBe(404);
+        });
+    });
 });
