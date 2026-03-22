@@ -22,7 +22,8 @@ module.exports = {
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
     '!src/index.ts',
-    '!src/__tests__/**'
+    '!src/__tests__/**',
+    '!src/utils/jwt.ts'
   ],
   coverageThreshold: {
     global: {

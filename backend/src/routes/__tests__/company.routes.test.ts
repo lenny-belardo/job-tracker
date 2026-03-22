@@ -5,7 +5,7 @@ import { generateAccessToken } from '@/utils/jwt';
 import { createMockUser, createMockCompany } from '@/__tests__/helpers/test-data';
 
 // mock prisma
-jest.mock('@/config/prisma');
+jest.mock('@/config/database');
 
 describe('Company Routes', () => {
     let authToken : string;
@@ -35,7 +35,7 @@ describe('Company Routes', () => {
             const response = await request(app)
                 .post('/api/companies')
                 .set('Authorization', `Bearer ${authToken}`)
-                .send(companyData)
+                .send(companyData);
             
             expect(response.status).toBe(201);
             expect(response.body.success).toBe(true);
