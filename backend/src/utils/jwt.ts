@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import logger from './logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m';
+const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '15m') as string;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'fallback-refresh';
-const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+const JWT_REFRESH_EXPIRES_IN = (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as string;
 
 // Validate secrets on startup
 if (process.env.NODE_ENV === 'production') {
@@ -23,18 +23,22 @@ interface JwtPayload {
  * Generate access token (short-lived)
  */
 export const generateAccessToken = (userId: string): string => {
-    return jwt.sign({ userId }, JWT_SECRET, {
+    const options: SignOptions = {
         expiresIn: JWT_EXPIRES_IN
-    });
+    };
+
+    return jwt.sign({ userId }, JWT_SECRET, options);
 }
 
 /**
  * Generate refresh token (long-lived)
  */
 export const generateRefreshToken = (userId: string): string => {
-    return jwt.sign({ userId }, JWT_REFRESH_SECRET, {
+    const options: SignOptions = {
         expiresIn: JWT_REFRESH_EXPIRES_IN
-    });
+    };
+
+    return jwt.sign({ userId }, JWT_REFRESH_SECRET, options);
 }
 
 /**
@@ -64,7 +68,7 @@ export const verifyRefreshToken = (token: string): JwtPayload | null => {
         return jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayload;
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
-            logger.info('Refresh token expired - user needs to loggin again');
+            logger.info('Refresh token expired - user needs to login again');
         } else if (error instanceof jwt.JsonWebTokenError) {
             logger.warn('Invalid refresh token - possible attack?', { error });
         } else {
