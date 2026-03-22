@@ -77,4 +77,40 @@ describe('Company Routes', () => {
             expect(response.body.error.code).toBe('VALIDATION_ERROR');
         });
     });
+
+    describe('GET /api/companies', () => {
+        it('should return paginated companies', async () => {
+            const mockCompanies = [
+                createMockCompany(mockUser.id, { name: 'Google' }),
+                createMockCompany(mockUser.id, { name: 'Microsoft' })
+            ];
+
+            (prisma.company.findMany as jest.Mock).mockResolvedValue(mockCompanies);
+            (prisma.company.count as jest.Mock).mockResolvedValue(2);
+
+            const response = await request(app)
+                .get('/api/companies?page=1&limit=10')
+                .set('Authorization', `Bearer ${authToken}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.data).toHaveLength(2);
+            expect(response.body.pagination.total).toBe(2);
+        });
+
+        it('should filter by search term', async () => {
+            const mockCompanies = [createMockCompany(mockUser.id, { name: 'Google' })];
+
+            (prisma.company.findMany as jest.Mock).mockResolvedValue(mockCompanies);
+            (prisma.company.count as jest.Mock).mockResolvedValue(1);
+
+            const response = await request(app)
+                .get('/api/companies?search=google')
+                .set('Authorization', `Bearer ${authToken}`);
+            
+            expect(response.status).toBe(200);
+            expect(response.body.data).toHaveLength(1);
+            expect(response.body.data[0].name).toBe('Google');
+        });
+    });
 });
