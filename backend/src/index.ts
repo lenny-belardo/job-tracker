@@ -4,6 +4,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
+import swaggerUI from 'swagger-ui-express';
+import { swaggerSpec } from '@/config/swagger';
 import logger from '@/utils/logger';
 import { greet } from '@/utils/test-helper';
 import authRoutes from '@/routes/auth.routes';
@@ -43,6 +45,9 @@ app.get('/health', (_req, res) => {
         message: greet('Developer')
     });
 });
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+logger.info('📚 API Documentation available at http://localhost:3000/api-docs');
 
 // API routes
 app.use('/api/auth', authRoutes);
