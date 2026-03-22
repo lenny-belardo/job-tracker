@@ -77,10 +77,12 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
     });
 });
 
-// start server
-app.listen(PORT, () => {
-    logger.info(`🚀 Server running on port ${PORT}`);
-    logger.info(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// start server (not in test environment)
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        logger.info(`🚀 Server running on port ${PORT}`);
+        logger.info(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+}
 
 export default app;

@@ -5,7 +5,22 @@ import { generateAccessToken } from '@/utils/jwt';
 import { createMockUser, createMockCompany } from '@/__tests__/helpers/test-data';
 
 // mock prisma
-jest.mock('@/config/database');
+jest.mock('@/config/database', () => ({
+    __esModule: true,
+    default: {
+        user: {
+            findUnique: jest.fn()
+        },
+        company: {
+            create: jest.fn(),
+            findMany: jest.fn(),
+            findFirst: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+            count: jest.fn()
+        }
+    }
+}));
 
 describe('Company Routes', () => {
     let authToken : string;
@@ -17,6 +32,8 @@ describe('Company Routes', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        // mock user lookup used by auth middleware
+        (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
     });
 
     describe('POST /api/companies', () => {

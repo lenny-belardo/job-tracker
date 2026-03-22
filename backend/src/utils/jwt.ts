@@ -24,7 +24,7 @@ interface JwtPayload {
  */
 export const generateAccessToken = (userId: string): string => {
     return jwt.sign({ userId }, JWT_SECRET, {
-        expiresIn: JWT_EXPIRES_IN as string | number
+        expiresIn: JWT_EXPIRES_IN as any
     });
 }
 
@@ -33,7 +33,7 @@ export const generateAccessToken = (userId: string): string => {
  */
 export const generateRefreshToken = (userId: string): string => {
     return jwt.sign({ userId }, JWT_REFRESH_SECRET, {
-        expiresIn: JWT_REFRESH_EXPIRES_IN as string | number
+        expiresIn: JWT_REFRESH_EXPIRES_IN as any
     });
 }
 
