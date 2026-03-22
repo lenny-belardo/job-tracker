@@ -159,4 +159,20 @@ describe('Company Routes', () => {
             expect(response.body.data.rating).toBe(5);
         });
     });
+
+    describe('DELETE /api/companies/:id', () => {
+        it('should delete company successfully', async () => {
+            const mockCompany = createMockCompany(mockUser.id);
+
+            (prisma.company.findFirst as jest.Mock).mockResolvedValue(mockCompany);
+            (prisma.company.delete as jest.Mock).mockResolvedValue(mockCompany);
+
+            const response = await request(app)
+                .delete(`/api/companies/${mockCompany.id}`)
+                .set('Authorization', `Bearer ${authToken}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.message).toContain('deleted successfully');
+        });
+    });
 });
