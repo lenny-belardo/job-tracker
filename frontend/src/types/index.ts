@@ -54,20 +54,18 @@ export interface Application {
     updatedAt: string;
 }
 
-export enum ApplicationStatus {
-    WISHLIST = 'WISHLIST',
-    APPLIED = 'APPLIED',
-    INTERVIEWING = 'INTERVIEWING',
-    OFFERED = 'OFFERED',
-    REJECTED = 'REJECTED',
-    ACCEPTED = 'ACCEPTED'
-}
+export type ApplicationStatus =
+    | 'WISHLIST'
+    | 'APPLIED'
+    | 'INTERVIEWING'
+    | 'OFFERED'
+    | 'REJECTED'
+    | 'ACCEPTED';
 
-export enum ApplicationPriority {
-    LOW = 'LOW',
-    MEDIUM = 'MEDIUM',
-    HIGH = 'HIGH'
-}
+export type ApplicationPriority =
+    | 'LOW'
+    | 'MEDIUM'
+    | 'HIGH';
 
 export interface PaginationMeta {
     total: number;
