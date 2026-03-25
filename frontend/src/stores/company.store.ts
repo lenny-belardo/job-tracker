@@ -5,7 +5,7 @@ import type { Company, PaginationMeta } from '@/types';
 
 export const useCompanyStore = defineStore('company', () => {
     const companies = ref<Company[]>([]);
-    // const currentCompany = ref<Company | null>(null);
+    const currentCompany = ref<Company | null>(null);
     const pagination = ref<PaginationMeta | null>(null);
     const isLoading = ref(false);
     const error = ref<string | null>(null);
@@ -26,7 +26,22 @@ export const useCompanyStore = defineStore('company', () => {
         }
     }
 
+    async function fetchCompany(id: string) {
+        isLoading.value = true;
+        error.value = null;
+
+        try {
+            const response = await companiesApi.getById(id);
+            currentCompany.value = response.data;
+        } catch (err: any) {
+            error.value = err.response?.data?.error?.message || 'Failed to fetch company';
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
-        fetchCompanies
+        fetchCompanies,
+        fetchCompany
     };
 });
