@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // if 401 and we haven't retried yed
+        // if 401 and we haven't retried yet
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
@@ -40,7 +40,7 @@ apiClient.interceptors.response.use(
 
                 // attempt token refresh
                 const response = await axios.post(
-                    `${import.meta.env.VITE_API_URL || 'http://localhost;3000/api'}/auth/refresh`,
+                    `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/auth/refresh`,
                     { refreshToken }
                 );
 
