@@ -103,6 +103,11 @@ export const useCompanyStore = defineStore('company', () => {
     }
 
     return {
+        companies,
+        currentCompany,
+        pagination,
+        isLoading,
+        error,
         createCompany,
         deleteCompany,
         fetchCompanies,
