@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { authApi } from '@/api/auth.api';
 import type { User, LoginCredentials, RegisterData } from '@/types';
 
@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
     const isLoading = ref(false);
     const error = ref<string | null>(null);
 
-    // const isAuthenticated = computed(() => !!accessToken.value && !!user.value);
+    const isAuthenticated = computed(() => !!accessToken.value && !!user.value);
 
     async function login(credentials: LoginCredentials) {
         isLoading.value = true;
@@ -57,6 +57,21 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function fetchProfile() {
+        if (!accessToken.value) {
+            return;
+        }
+
+        try {
+            const response = await authApi.getProfile();
+
+            user.value = response.data;
+        } catch (err) {
+            // token invalid, logout
+            logout();
+        }
+    }
+
     function logout() {
         user.value = null;
         accessToken.value = null;
@@ -66,8 +81,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     return {
+        accessToken,
+        error,
+        isAuthenticated,
+        isLoading,
+        fetchProfile,
         login,
         logout,
-        register
+        register,
+        user
     };
 });
