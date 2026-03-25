@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { companiesApi, type CompanyFilters } from '@/api/companies.api';
+import { companiesApi, type CompanyFilters, type CreateCompanyData } from '@/api/companies.api';
 import type { Company, PaginationMeta } from '@/types';
 
 export const useCompanyStore = defineStore('company', () => {
@@ -40,7 +40,26 @@ export const useCompanyStore = defineStore('company', () => {
         }
     }
 
+    async function createCompany(data: CreateCompanyData) {
+        isLoading.value = true;
+        error.value = null;
+
+        try {
+            const response = await companiesApi.create(data);
+            companies.value.unshift(response.data);
+
+            return true;
+        } catch (err: any) {
+            error.value = err.response?.data?.error?.message || 'Failed to create company';
+
+            return false;
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
+        createCompany,
         fetchCompanies,
         fetchCompany
     };
