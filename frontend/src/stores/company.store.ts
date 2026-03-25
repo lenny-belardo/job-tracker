@@ -84,8 +84,27 @@ export const useCompanyStore = defineStore('company', () => {
         }
     }
 
+    async function deleteCompany(id: string) {
+        isLoading.value = true;
+        error.value = null;
+
+        try {
+            await companiesApi.delete(id);
+            companies.value = companies.value.filter((c) => c.id !== id);
+
+            return true;
+        } catch (err: any) {
+            error.value =  err.response?.data?.error?.message || 'Failed to delete company';
+
+            return false;
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
         createCompany,
+        deleteCompany,
         fetchCompanies,
         fetchCompany,
         updateCompany
