@@ -13,7 +13,7 @@ const router = createRouter({
         {
             path: '/register',
             name: 'register',
-            component: () => import('@/viewa/RegisterView.vue'),
+            component: () => import('@/views/RegisterView.vue'),
             meta: { requiresGuest: true }
         },
         {
@@ -47,7 +47,7 @@ router.beforeEach((to, from, next) => {
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
         next('/login');
-    } else if (to.meta.requireGuest && authStore.isAuthenticated) {
+    } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
         next('/');
     } else {
         next();
