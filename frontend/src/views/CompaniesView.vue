@@ -66,7 +66,82 @@
         </div>
 
         <!-- Create/Edit Modal -->
-        <div>
+        <div
+            v-if="showCreateModal || showEditModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+            @click.self="closeModals"
+        >
+            <div class="bg-white rounded-lg p-6 max-w-md w-full">
+                <h3 class="text-xl font-bold mb-4">
+                    {{ showEditModal ? 'Edit Company' : 'Add Company' }}
+                </h3>
+
+                <form @submit.prevent="handleSubmit" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">
+                            Company Name
+                        </label>
+
+                        <input v-model="form.name" type="text" required class="input" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">
+                            Industry
+                        </label>
+
+                        <input v-model="form.industry" type="text" class="input" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">
+                            Website
+                        </label>
+
+                        <input v-model="form.website" type="url" class="input" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">
+                            Location
+                        </label>
+
+                        <input v-model="form.location" type="text" class="input" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">
+                            Rating (1-5)
+                        </label>
+
+                        <input
+                            v-model.number="form.rating"
+                            type="number"
+                            min="1"
+                            max="5"
+                            class="input"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">
+                            Notes
+                        </label>
+
+                        <textarea v-model="form.notes" rows="3" class="input"></textarea>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-1">
+                            {{ showEditModal ? 'Update' : 'Create' }}
+                        </button>
+
+                        <button type="button" @click="closeModals" class="btn btn-secondary">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </template>
